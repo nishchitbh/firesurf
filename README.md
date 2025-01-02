@@ -11,6 +11,8 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 - `model_manager.py`: Manages the language models, agent setup, and tool configurations.
 - `prompts.py`: Contains the prompt template used by the ReAct agent.
 - `requirements.txt`: Lists the Python dependencies required to run the project.
+- `scraper.py`: Contains the code for web scraping functionality. It uses `requests` and `BeautifulSoup` to scrape data from a given URL, extracting the title, headers, and paragraphs.
+- `search.py`: Contains the code for web search functionality. It uses `requests` and `BeautifulSoup` to search on DuckDuckGo and extract the title, link, and description of the search results.
 - `tools.py`: Defines the tools available to the agent, such as executing code, listing directory contents, writing code, reading files, and running PowerShell commands.
 
 ## How it Works
