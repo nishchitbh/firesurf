@@ -1,6 +1,6 @@
 # Firesurf
 
-Firesurf is an interactive coding assistant that leverages the power of large language models to help users with their coding tasks. It uses a combination of Llama-3.3-70B-Instruct and Google Gemini models, along with a ReAct agent framework, to provide intelligent and context-aware assistance.
+Firesurf is an interactive CLI based coding assistant that leverages the power of large language models to help users with their coding tasks. It uses a combination of Llama-3.3-70B-Instruct and Google Gemini models, along with a ReAct agent framework, to provide intelligent and context-aware assistance.
 
 ## Project Structure
 
