@@ -6,7 +6,10 @@ from pathlib import Path
 
 # Useful for when you need to run a code. Args: filename:str
 def execute_code(filename) -> str:
+    print(f"Executing code: {filename}")
     try:
+        filename = filename.strip("'")
+        filename = filename.strip('"')
         result = subprocess.run(
             ['python', filename],
             check=True,
@@ -20,7 +23,10 @@ def execute_code(filename) -> str:
 
 # Useful for when you need to fetch contents inside directory and its sub-directories. Args: directory:str
 def get_dir(root_dir: str) -> str:
+    print(f"Searching directory: {root_dir}")
     try:
+        root_dir = root_dir.strip("'")
+        root_dir = root_dir.strip('"')
         default_ignore = ['venv', '__pycache__', 'env', '.git']
         ignore_dirs =  default_ignore
         
@@ -43,6 +49,7 @@ def get_dir(root_dir: str) -> str:
 
 # Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
 def write_code(inputs:dict):
+    print("Writing code...")
     try:
         inputs = ast.literal_eval(inputs)
         filename = inputs["filename"]
@@ -55,15 +62,19 @@ def write_code(inputs:dict):
 
 # Useful for when you ened to read file. Arg: filename:str
 def read_file(filename):
+    print(f"Reading file: {filename}")
     try:
         with open(filename, "r") as f:
             return f.read()
     except Exception as e:
         return str(e)
 
-# Useful for when you need to run powershell commands (powershell only, nothing else). Arg: command: str
+# Useful for when you need to run powershell commands. Arg: command: str
 def run_powershell(command):
+    print(f"Running Command: {command}")
     try:
+        command = command.strip("'")
+        command = command.strip('"')
         result = subprocess.run(['powershell', '-Command', command], 
                                 capture_output=True, text=True, check=True)
         output = result.stdout.strip()
