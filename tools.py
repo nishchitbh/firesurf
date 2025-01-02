@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 from search import search
 from scraper import scrape_link
+import os
 # Useful for when you need to run a code. Args: filename:str
 def execute_code(filename) -> str:
     print(f"Executing code: {filename}")
@@ -20,10 +21,15 @@ def execute_code(filename) -> str:
     except subprocess.CalledProcessError as e:
         return  f"Code execution failed: {e.stderr.decode()}"
 
-
+def get_dir(directory):
+    print(f"Searching directory: {directory}")
+    try:
+        return os.listdir(directory)
+    except Exception as e:
+        return f"Error: {e}"
 # Useful for when you need to fetch contents inside directory and its sub-directories. Args: directory:str
-def get_dir(root_dir: str) -> str:
-    print(f"Searching directory: {root_dir}")
+def get_project_structure(root_dir: str) -> str:
+    print(f"Looking at project structure in directory: {root_dir}")
     try:
         root_dir = root_dir.strip("'")
         root_dir = root_dir.strip('"')
@@ -94,9 +100,14 @@ tools = [
         description="Useful for when you need to run a code. Args: filename:str"
         ),
     Tool.from_function(
-        name="List directory",
-        func=get_dir,
-        description="Useful for when you need to fetch contents inside directory and its sub-directories. Args: directory:str"
+        name="List Directory",
+        func=execute_code,
+        description="Useful for when you need to get files in a directory. Args: directory:str"
+        ),
+    Tool.from_function(
+        name="Get Project Structure",
+        func=get_project_structure,
+        description="Useful for when you need to get the project structure of the current directory. Get Project Structure like the List Directory tool except it nests through all sub-directories as well. Args: directory:str"
         ),
     Tool.from_function(
         name="Write code",

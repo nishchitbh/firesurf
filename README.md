@@ -13,7 +13,7 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 - `requirements.txt`: Lists the Python dependencies required to run the project.
 - `scraper.py`: Contains the code for web scraping functionality. It uses `requests` and `BeautifulSoup` to scrape data from a given URL, extracting the title, headers, and paragraphs.
 - `search.py`: Contains the code for web search functionality. It uses `requests` and `BeautifulSoup` to search on DuckDuckGo and extract the title, link, and description of the search results.
-- `tools.py`: Defines the tools available to the agent, such as executing code, listing directory contents, writing code, reading files, and running PowerShell commands.
+- `tools.py`: Defines the tools available to the agent, such as executing code, listing directory contents, getting project structure, writing code, reading files, running PowerShell commands, searching the internet and scraping websites.
 
 ## How it Works
 
@@ -37,7 +37,8 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 5. **Tools (`tools.py`):**
    - This file defines the custom tools available to the agent, such as:
      - `Execute code`: Useful for when you need to run a code. Args: filename:str
-     - `List directory`: Useful for when you need to fetch contents inside directory and its sub-directories. Args: directory:str
+     - `List Directory`: Useful for when you need to get files in a directory. Args: directory:str
+     - `Get Project Structure`: Useful for when you need to get the project structure of the current directory. Get Project Structure like the List Directory tool except it nests through all sub-directories as well. Args: directory:str
      - `Write code`: Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
      - `Read file`: Useful for when you ened to read file. Arg: filename:str
      - `Execute powershell comands`: Useful for when you need to run powershell commands (powershell only, nothing else). Arg: command: str

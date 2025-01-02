@@ -24,7 +24,10 @@ When you have a response to say to the Human, or if you do not need to use a too
 Thought: Do I need to use a tool? No
 Final Answer: [your response here]
 
-NOTE: STRICTLY Don't use markdown components like ``` or any other components anywhere.
+NOTE: 
+i. STRICTLY Don't use markdown components like ``` or any other components anywhere.
+ii. Always start by seeing the directory contents using List Directory tool.
+iii. Always make sure that you have good understanding about all the files in the project directory before changing anything.
 Begin!
 
 Previous conversation history:
