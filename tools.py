@@ -97,17 +97,17 @@ tools = [
     Tool.from_function(
         name="Execute code",
         func=execute_code,
-        description="Useful for when you need to run a code. Args: filename:str"
+        description="Useful for when you need to run a code. Args: filename:str, which is the name of codefile."
         ),
     Tool.from_function(
         name="List Directory",
         func=execute_code,
-        description="Useful for when you need to get files in a directory. Args: directory:str"
+        description="Useful for when you need to get files in a directory. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory."
         ),
     Tool.from_function(
         name="Get Project Structure",
         func=get_project_structure,
-        description="Useful for when you need to get the project structure of the current directory. Get Project Structure like the List Directory tool except it nests through all sub-directories as well. Args: directory:str"
+        description="Useful for when you need to get the project structure of the current directory. Get Project Structure like the List Directory tool except it nests through all sub-directories as well. Args: directory:str, which is the name of directory of the project. use '.' for current directory."
         ),
     Tool.from_function(
         name="Write code",
@@ -117,7 +117,7 @@ tools = [
     Tool.from_function(
         name="Read file",
         func=read_file,
-        description="Useful for when you ened to read file. Arg: filename:str"
+        description="Useful for when you need to read file. Arg: filename:str"
     ),
     Tool.from_function(
         name="Execute powershell comands",
