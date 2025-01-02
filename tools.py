@@ -2,8 +2,8 @@ from langchain_core.tools import Tool
 import ast
 import subprocess
 from pathlib import Path
-
-
+from search import search
+from scraper import scrape_link
 # Useful for when you need to run a code. Args: filename:str
 def execute_code(filename) -> str:
     print(f"Executing code: {filename}")
@@ -112,5 +112,15 @@ tools = [
         name="Execute powershell comands",
         func=run_powershell,
         description="Useful for when you need to run powershell commands (powershell only, nothing else). Arg: command: str"
-    )
+    ),
+    Tool.from_function(
+        name="Search Internet",
+        func=search,
+        description="Useful for searching for documentation, error fixing guides, etc. from internet. Arg: query: str"
+    ),
+    Tool.from_function(
+        name="Scrape website",
+        func=scrape_link,
+        description="Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool"
+    ),
 ]
