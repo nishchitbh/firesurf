@@ -91,7 +91,7 @@ tools = [
         description="Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool"
     ),
     Tool.from_function(
-        name="Get Current Working Dirrectory",
+        name="Get Current Working Directory",
         func=get_cwd,
         description="Useful for when you need to know which directory you are working on. Args: None"
     ),
