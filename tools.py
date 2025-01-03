@@ -34,6 +34,13 @@ def read_file(filename):
     except Exception as e:
         return str(e)
 
+def get_cwd(a):
+    print("Running getcwd")
+    try:
+        directory = os.getcwd()
+        return directory
+    except Exception as e:
+        return f"Error: {e}"
 # Useful for when you need to run powershell commands. Arg: command: str
 def run_powershell(command):
     print(f"Running Command: {command}")
@@ -82,5 +89,10 @@ tools = [
         name="Scrape website",
         func=scrape_link,
         description="Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool"
+    ),
+    Tool.from_function(
+        name="Get Current Working Dirrectory",
+        func=get_cwd,
+        description="Useful for when you need to know which directory you are working on. Args: None"
     ),
 ]
