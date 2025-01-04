@@ -7,13 +7,14 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 - `.env`: Contains environment variables such as API keys. **Note:** This file is not tracked by Git and should be created with your own API keys.
 - `.env.example`: An example `.env` file with placeholder API keys.
 - `.gitignore`: Specifies intentionally untracked files that Git should ignore.
+- `guidelines.py`: Contains the guidelines for the project.
 - `main.py`: The main entry point of the application. This script sets up the chat interface and interacts with the agent executor.
 - `model_manager.py`: Manages the language models, agent setup, and tool configurations.
 - `prompts.py`: Contains the prompt template used by the ReAct agent.
 - `requirements.txt`: Lists the Python dependencies required to run the project.
 - `scraper.py`: Contains the code for web scraping functionality. It uses `requests` and `BeautifulSoup` to scrape data from a given URL, extracting the title, headers, and paragraphs.
 - `search.py`: Contains the code for web search functionality. It uses `requests` and `BeautifulSoup` to search on DuckDuckGo and extract the title, link, and description of the search results.
-- `tools.py`: Defines the tools available to the agent, such as executing code, listing directory contents, getting project structure, writing code, reading files, running PowerShell commands, searching the internet and scraping websites.
+- `tools.py`: Defines the tools available to the agent, such as listing directory contents, writing code, reading files, running PowerShell commands, searching the internet, scraping websites, and reading notebook files.
 
 ## How it Works
 
@@ -30,20 +31,20 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
    - This file sets up the language models (Llama-3.3-70B-Instruct and Gemini) and their respective APIs.
    - It configures a ReAct agent using a prompt defined in `prompts.py`.
    - It also defines the tools that the agent can use, which are defined in `tools.py`.
+   -  The available models are printed to the console, and the user is prompted to choose one by index.
 
 4. **Prompt Template (`prompts.py`):**
     - This file contains the prompt template used by the ReAct agent. It instructs the agent on how to behave, use tools, and follow a specific format for its responses.
 
 5. **Tools (`tools.py`):**
    - This file defines the custom tools available to the agent, such as:
-     - `Execute code`: Useful for when you need to run a code. Args: filename:str
      - `List Directory`: Useful for when you need to get files in a directory. Args: directory:str
-     - `Get Project Structure`: Useful for when you need to get the project structure of the current directory. Get Project Structure like the List Directory tool except it nests through all sub-directories as well. Args: directory:str
      - `Write code`: Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
      - `Read file`: Useful for when you ened to read file. Arg: filename:str
-     - `Execute powershell comands`: Useful for when you need to run powershell commands (powershell only, nothing else). Arg: command: str
+     - `Execute comands`: Useful for when you need to run commands of different operating system, run codes, control the computer through Powershell CLI, etc. Run commands of different operating system only, nothing else. Arg: command: str
      - `Search Internet`: Useful for searching for documentation, error fixing guides, etc. from internet. Arg: query: str
      - `Scrape website`: Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool
+     - `Notebook Reader`: Useful for when you need to read an ipynb notebook. Args: filename: str, directory to the file
 
 ## Dependencies
 
