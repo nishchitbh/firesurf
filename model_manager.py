@@ -13,7 +13,9 @@ from colorama import Fore, Style
 from dotenv import load_dotenv
 load_dotenv()
 
+
 # Initialize the ChatOpenAI model with API key and configurations
+
 
 models_info = [
 
@@ -32,7 +34,8 @@ models = [model["model"] for model in models_info]
 print(f"{Fore.GREEN}Available models: {Style.RESET_ALL}")
 for index, model in enumerate(models_info):
     print(f"{index}: {model["name"]}")
-model_index = int(input(f"Choose your model {Fore.CYAN}0-{index}:{Style.RESET_ALL} "))
+model_index = int(
+    input(f"Choose your model {Fore.CYAN}0-{index}:{Style.RESET_ALL} "))
 
 llm = models[model_index]
 

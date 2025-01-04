@@ -4,7 +4,29 @@ import subprocess
 from search import search
 from scraper import scrape_link
 import os
+import platform
+import distro
+import nbformat
 
+
+
+os_type = platform.platform()
+
+if 'linux' in os_type.lower():
+    os_type=f"{distro.name()} {distro.version()}"
+
+def extract_code_cells(file_path):
+    # Read the notebook
+    with open(file_path, "r", encoding="utf-8") as f:
+        notebook = nbformat.read(f, as_version=4)
+
+    # Extract code from code cells
+    code_cells = [
+        cell["source"] for cell in notebook["cells"] if cell["cell_type"] == "code"
+    ]
+    cell_string = "\n".join(code_cells)
+
+    return cell_string
 
 def get_dir(directory):
     print(f"Searching directory: {directory}")
@@ -42,20 +64,14 @@ def get_cwd(a):
     except Exception as e:
         return f"Error: {e}"
 # Useful for when you need to run powershell commands. Arg: command: str
-def run_powershell(command):
+def run_command(command):
     print(f"Running Command: {command}")
     try:
-        command = command.strip("'")
-        command = command.strip('"')
-        result = subprocess.run(['powershell', '-Command', command], 
-                                capture_output=True, text=True, check=True)
-        output = result.stdout.strip()
-        error = None
+        result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return f"Standard Output:\n{result.stdout}\n\nError Output:\n{result.stderr if result.stderr else 'None'}"
     except subprocess.CalledProcessError as e:
-        output = e.stdout.strip()
-        error = e.stderr.strip()
-    
-    return f"Output: {output}\nError: {error if error else 'None'}"
+        return f"Command failed with error:\nStandard Output:\n{e.stdout}\n\nError Output:\n{e.stderr if e.stderr else 'None'}"
+
 
 
 # Collect all tools
@@ -76,9 +92,9 @@ tools = [
         description="Useful for when you need to read file. Arg: filename:str"
     ),
     Tool.from_function(
-        name="Execute powershell comands",
-        func=run_powershell,
-        description="Useful for when you need to run powershell commands (powershell only, nothing else), run codes, control the computer through Powershell CLI, etc. Arg: command: str"
+        name="Execute comands",
+        func=run_command,
+        description=f"Useful for when you need to run commands of {os_type} operating system, run codes, control the computer through Powershell CLI, etc. Run commands of {os_type} operating system only, nothing else. Arg: command: str"
     ),
     Tool.from_function(
         name="Search Internet",
@@ -94,5 +110,10 @@ tools = [
         name="Get Current Working Directory",
         func=get_cwd,
         description="Useful for when you need to know which directory you are working on. Args: None"
+    ),
+    Tool.from_function(
+        name="Notebook Reader",
+        func=extract_code_cells,
+        description="Useful for when you need to read an ipynb notebook. Args: filename: str, directory to the file"
     ),
 ]

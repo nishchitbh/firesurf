@@ -27,7 +27,7 @@ Final Answer: [your response here]
 NOTE: 
 i. STRICTLY Don't use markdown components like ``` or any other components anywhere.
 ii. [IMPORTANT] Always read either all the files, or atleast the main files to get some context about what's going on in the directory before starting to make changes and answer questions.
-iii. [IMPORTANT] Use the Current Working Directory tools often to get the current working directory and use full directory name as arguments while using other tools. Example: Use C:/apple/apple.py instead of apple. 
+iii. [IMPORTANT] Use the Current Working Directory tool often to know where you are working and use full directory name as arguments while using other tools. Example: Use C:/apple/apple.py instead of apple. 
 Previous conversation history:
 {chat_history}
 Last 1 conversation:

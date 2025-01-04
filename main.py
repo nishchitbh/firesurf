@@ -4,12 +4,16 @@ from model_manager import agent_executor
 # Import HumanMessage and AIMessage from langchain.schema
 from langchain.schema import HumanMessage, AIMessage
 from colorama import Fore, Style
+from guidelines import guidelines
+
 
 # Initialize an empty list to store the chat history
 chat_history = []
 # Initialize an empty list to store the last conversation
 last_conversation = []
 # Start an infinite loop to continuously take user input
+
+print(guidelines)
 while True:
     # Get user input
     prompt = input(f"{Fore.GREEN}User: {Style.RESET_ALL}")
