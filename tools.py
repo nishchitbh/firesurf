@@ -42,7 +42,7 @@ def write_code(inputs:dict):
     try:
         inputs = ast.literal_eval(inputs)
         filename = inputs["filename"]
-        print(f"Writing code to {filename}...")
+        print(f"Writing code into {filename}...")
         code = inputs["code"]
         with open(filename, "w") as f:
             f.write(code)
@@ -85,6 +85,32 @@ def run_powershell(command):
     print(f"Output: {output}\nError: {error if error else 'None'}")
     return f"Output: {output}\nError: {error if error else 'None'}"
 
+def get_directory_structure(directory):
+    print("Getting project structure...")
+    def build_structure(path, prefix=""):
+        ignored_dirs = {'node_modules', 'venv', 'env'}
+        entries = sorted([e for e in os.listdir(path) 
+                          if not e.startswith(('-', '_', '.')) and e not in ignored_dirs])  # Filter out ignored entries
+        structure = []
+
+        for i, entry in enumerate(entries):
+            entry_path = os.path.join(path, entry)
+            is_last = (i == len(entries) - 1)
+            connector = "└── " if is_last else "├── "
+            sub_prefix = "    " if is_last else "│   "
+
+            if os.path.isdir(entry_path):
+                structure.append(f"{prefix}{connector}{entry}/")
+                structure.extend(build_structure(entry_path, prefix + sub_prefix))
+            else:
+                structure.append(f"{prefix}{connector}{entry}")
+
+        return structure
+
+    if not os.path.isdir(directory):
+        raise ValueError(f"'{directory}' is not a valid directory.")
+    return "\n".join(build_structure(directory))
+
 
 # Collect all tools
 tools = [
@@ -92,6 +118,11 @@ tools = [
         name="List Directory",
         func=get_dir,
         description="Useful for when you need to get files in a directory. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory."
+        ),
+    Tool.from_function(
+        name="Get Project Structure",
+        func=get_directory_structure,
+        description="Useful for when you need to get entire structure of directory including subdirectories, files inside subdirectories, etc. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory. ignore files inside .gitignore if the user asks about project structure."
         ),
     Tool.from_function(
         name="Write code",
