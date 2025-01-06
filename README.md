@@ -1,6 +1,6 @@
 # Firesurf
 
-Firesurf is an interactive CLI based coding assistant that leverages the power of large language models to help users with their coding tasks. It uses a combination of Llama-3.3-70B-Instruct and Google Gemini models, along with a ReAct agent framework, to provide intelligent and context-aware assistance.
+Firesurf is an interactive CLI based coding assistant that leverages the power of large language models to help users with their coding tasks. It uses a Google Gemini model, along with a ReAct agent framework, to provide intelligent and context-aware assistance.
 
 ## Project Structure
 
@@ -9,7 +9,7 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 - `.gitignore`: Specifies intentionally untracked files that Git should ignore.
 - `guidelines.py`: Contains the guidelines for the project.
 - `main.py`: The main entry point of the application. This script sets up the chat interface and interacts with the agent executor.
-- `model_manager.py`: Manages the language models, agent setup, and tool configurations.
+- `model_manager.py`: Manages the language model, agent setup, and tool configurations.
 - `prompts.py`: Contains the prompt template used by the ReAct agent.
 - `requirements.txt`: Lists the Python dependencies required to run the project.
 - `scraper.py`: Contains the code for web scraping functionality. It uses `requests` and `BeautifulSoup` to scrape data from a given URL, extracting the title, headers, and paragraphs.
@@ -19,7 +19,7 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 ## How it Works
 
 1. **Environment Setup:**
-   - Create a `.env` file in the project directory and add your API keys for GLHF and Google Gemini. Refer to `.env.example` for the required keys.
+   - Create a `.env` file in the project directory and add your API key for Google Gemini. Refer to `.env.example` for the required keys.
    - Install the required Python packages using `pip install -r requirements.txt`.
 
 2. **Main Application (`main.py`):**
@@ -28,10 +28,9 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
    - It also maintains a chat history to provide context for future interactions.
 
 3. **Model Management (`model_manager.py`):**
-   - This file sets up the language models (Llama-3.3-70B-Instruct and Gemini) and their respective APIs.
-   - It configures a ReAct agent using a prompt defined in `prompts.py`.
+   - This file sets up the Google Gemini language model and its API.
+   - It configures a ReAct agent using a prompt defined in `prompts.py`. The prompt is loaded from the langchain hub and the template is set from the prompts.py file.
    - It also defines the tools that the agent can use, which are defined in `tools.py`.
-   -  The available models are printed to the console, and the user is prompted to choose one by index.
 
 4. **Prompt Template (`prompts.py`):**
     - This file contains the prompt template used by the ReAct agent. It instructs the agent on how to behave, use tools, and follow a specific format for its responses.
