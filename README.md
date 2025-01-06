@@ -38,10 +38,10 @@ Firesurf is an interactive CLI based coding assistant that leverages the power o
 
 5. **Tools (`tools.py`):**
    - This file defines the custom tools available to the agent, such as:
-     - `List Directory`: Useful for when you need to get files in a directory. Args: directory:str
+     - `List Directory`: Useful for when you need to get files in a directory. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory.
      - `Write code`: Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
-     - `Read file`: Useful for when you ened to read file. Arg: filename:str
-     - `Execute comands`: Useful for when you need to run commands of different operating system, run codes, control the computer through Powershell CLI, etc. Run commands of different operating system only, nothing else. Arg: command: str
+     - `Read file`: Useful for when you need to read file. Arg: filename:str
+     - `Execute comands`: Useful for when you need to run commands of Windows-11-10.0.26100-SP0 operating system, run codes, control the computer through Powershell CLI, etc. Run commands of Windows-11-10.0.26100-SP0 operating system only, nothing else. Arg: command: str
      - `Search Internet`: Useful for searching for documentation, error fixing guides, etc. from internet. Arg: query: str
      - `Scrape website`: Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool
      - `Notebook Reader`: Useful for when you need to read an ipynb notebook. Args: filename: str, directory to the file

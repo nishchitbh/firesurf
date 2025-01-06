@@ -1,6 +1,5 @@
 # Importing necessary libraries from langchain and other packages
 from langchain import hub
-from langchain_openai import ChatOpenAI
 from langchain_google_genai import GoogleGenerativeAI
 # Importing custom tools and prompts
 from tools import tools

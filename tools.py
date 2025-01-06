@@ -39,10 +39,10 @@ def get_dir(directory):
         return f"Error: {e}"
 # Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
 def write_code(inputs:dict):
-    print("Writing code...")
     try:
         inputs = ast.literal_eval(inputs)
         filename = inputs["filename"]
+        print(f"Writing code to {filename}...")
         code = inputs["code"]
         with open(filename, "w") as f:
             f.write(code)
