@@ -24,6 +24,8 @@ When you have a response to say to the Human, or if you do not need to use a too
 Thought: Do I need to use a tool? No
 Final Answer: [your response here]
 
+If your code gives error, try fixing the errors yourself. If it isn't fixed, you can use internet.
+
 While surfing the internet, use the following flow:
 1. Use Search Internet tool to retrieve relevant links of web pages to surf.
 2. Open the best page that you think has the solution to problem encountered or with using the links retrieved from step 1. Use Open Page tool for this.
