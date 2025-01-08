@@ -2,20 +2,20 @@ from langchain_core.tools import Tool
 import ast
 import subprocess
 from search import search
-from scraper import scrape_link
 import os
 import platform
 import distro
 import nbformat
-
+from browser import playwright_tools
 
 
 os_type = platform.platform()
 
 if 'linux' in os_type.lower():
-    os_type=f"{distro.name()} {distro.version()}"
+    os_type = f"{distro.name()} {distro.version()}"
 
 print(f"OS Type: {os_type}")
+
 
 def extract_code_cells(file_path):
     # Read the notebook
@@ -31,6 +31,7 @@ def extract_code_cells(file_path):
 
     return cell_string
 
+
 def get_dir(directory):
     print(f"Searching directory: {directory}")
     try:
@@ -38,7 +39,9 @@ def get_dir(directory):
     except Exception as e:
         return f"Error: {e}"
 # Useful for when you need to write code to a file. Args: {'filename': filename, 'code': code} both filename and code should be string.
-def write_code(inputs:dict):
+
+
+def write_code(inputs: dict):
     try:
         inputs = ast.literal_eval(inputs)
         filename = inputs["filename"]
@@ -51,6 +54,8 @@ def write_code(inputs:dict):
         return str(e)
 
 # Useful for when you ened to read file. Arg: filename:str
+
+
 def read_file(filename):
     print(f"Reading file: {filename}")
     try:
@@ -59,6 +64,7 @@ def read_file(filename):
     except Exception as e:
         print(f"Error: {e}")
         return f"Error: {e}"
+
 
 def get_cwd(a):
     print("Running getcwd")
@@ -70,12 +76,14 @@ def get_cwd(a):
         print(f"Error: {e}")
         return f"Error: {e}"
 # Useful for when you need to run powershell commands. Arg: command: str
+
+
 def run_powershell(command):
     print(f"Running Command: {command}")
     try:
         command = command.strip("'")
         command = command.strip('"')
-        result = subprocess.run(['powershell', '-Command', command], 
+        result = subprocess.run(['powershell', '-Command', command],
                                 capture_output=True, text=True, check=True)
         output = result.stdout.strip()
         error = None
@@ -85,12 +93,15 @@ def run_powershell(command):
     print(f"Output: {output}\nError: {error if error else 'None'}")
     return f"Output: {output}\nError: {error if error else 'None'}"
 
+
 def get_directory_structure(directory):
     print("Getting project structure...")
+
     def build_structure(path, prefix=""):
         ignored_dirs = {'node_modules', 'venv', 'env'}
-        entries = sorted([e for e in os.listdir(path) 
-                          if not e.startswith(('-', '_', '.')) and e not in ignored_dirs])  # Filter out ignored entries
+        entries = sorted([e for e in os.listdir(path)
+                          # Filter out ignored entries
+                          if not e.startswith(('-', '_', '.')) and e not in ignored_dirs])
         structure = []
 
         for i, entry in enumerate(entries):
@@ -101,7 +112,8 @@ def get_directory_structure(directory):
 
             if os.path.isdir(entry_path):
                 structure.append(f"{prefix}{connector}{entry}/")
-                structure.extend(build_structure(entry_path, prefix + sub_prefix))
+                structure.extend(build_structure(
+                    entry_path, prefix + sub_prefix))
             else:
                 structure.append(f"{prefix}{connector}{entry}")
 
@@ -118,12 +130,12 @@ tools = [
         name="List Directory",
         func=get_dir,
         description="Useful for when you need to get files in a directory. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory."
-        ),
+    ),
     Tool.from_function(
         name="Get Project Structure",
         func=get_directory_structure,
         description="Useful for when you need to get entire structure of directory including subdirectories, files inside subdirectories, etc. Args: directory:str, which is the name of directory where you're using list directory command. use '.' for current directory. ignore files inside .gitignore if the user asks about project structure."
-        ),
+    ),
     Tool.from_function(
         name="Write code",
         func=write_code,
@@ -145,11 +157,6 @@ tools = [
         description="Useful for searching for documentation, error fixing guides, etc. from internet. Arg: query: str"
     ),
     Tool.from_function(
-        name="Scrape website",
-        func=scrape_link,
-        description="Useful for scraping website to get more information about a link. Arg: query: str, which is the link to the website obtained from Search Internet tool"
-    ),
-    Tool.from_function(
         name="Get Current Working Directory",
         func=get_cwd,
         description="Useful for when you need to know which directory you are working on. Args: None"
@@ -160,3 +167,4 @@ tools = [
         description="Useful for when you need to read an ipynb notebook. Args: filename: str, directory to the file"
     ),
 ]
+tools.extend(playwright_tools)

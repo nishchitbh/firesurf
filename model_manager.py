@@ -12,9 +12,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm = GoogleGenerativeAI(
-        google_api_key=os.getenv("GOOGLE_GEMINI_API"),
-        model="gemini-2.0-flash-exp"
-    )
+    google_api_key=os.getenv("GOOGLE_GEMINI_API2"),
+    model="gemini-2.0-flash-exp"
+)
 
 # Load the react prompt from langchain hub and set custom template
 react_docstore_prompt = hub.pull("hwchase17/react-chat")
