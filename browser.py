@@ -79,6 +79,20 @@ def extract_html_tags(*args, **kwargs):
         return f"Error extracting HTML: {e}"
 
 
+def extract_html_content(index):
+    try:
+        print(f"Extracting HTML content from the page, segment index: {index}")
+        page = context.pages[-1]  # Use the last opened page
+        full_html = page.content()
+        segment = full_html[2000*index:2000*(index+1)]
+        return f"Extracted HTML segment: {segment}"
+    except Exception as e:
+        return f"Error extracting HTML content: {e}"
+
+# Example usage:
+# Call `extract_html_content({'index': 0})` to get the first 2000 characters of the HTML content.
+
+
 def extract_button_elements(*args, **kwargs):
     try:
         # Get the most recently opened page in the context
@@ -94,10 +108,6 @@ def extract_button_elements(*args, **kwargs):
         for button in soup.find_all('button'):
             button_info = {
                 "html_code": str(button),
-                "css_selectors": {
-                    "class": button.get("class", []),
-                    "id": button.get("id", None),
-                },
                 "text": button.get_text(strip=True),
             }
             buttons_info.append(button_info)
@@ -106,10 +116,7 @@ def extract_button_elements(*args, **kwargs):
         for input_tag in soup.find_all('input', {'type': ['button', 'submit']}):
             input_info = {
                 "html_code": str(input_tag),
-                "css_selectors": {
-                    "class": input_tag.get("class", []),
-                    "id": input_tag.get("id", None),
-                },
+
                 "value": input_tag.get("value", ""),
                 "type": input_tag.get("type", ""),
             }
@@ -140,10 +147,6 @@ def extract_anchor_tags(*args, **kwargs):
             # Collecting necessary details for each anchor tag
             anchor_info = {
                 "html_code": str(anchor),
-                "css_selectors": {
-                    "class": anchor.get("class", []),
-                    "id": anchor.get("id", None),
-                },
                 "link": anchor["href"],
                 "text": anchor.get_text(strip=True),
             }
@@ -189,10 +192,6 @@ def extract_input_fields(*args, **kwargs):
         for input_tag in soup.find_all('input'):
             input_info = {
                 "html_code": str(input_tag),
-                "css_selectors": {
-                    "class": input_tag.get("class", []),
-                    "id": input_tag.get("id", None),
-                },
                 "type": input_tag.get("type", ""),
                 "name": input_tag.get("name", ""),
                 "placeholder": input_tag.get("placeholder", ""),
@@ -204,10 +203,6 @@ def extract_input_fields(*args, **kwargs):
         for textarea in soup.find_all('textarea'):
             textarea_info = {
                 "html_code": str(textarea),
-                "css_selectors": {
-                    "class": textarea.get("class", []),
-                    "id": textarea.get("id", None),
-                },
                 "name": textarea.get("name", ""),
                 "placeholder": textarea.get("placeholder", ""),
                 "value": textarea.get_text(strip=True),
@@ -218,10 +213,6 @@ def extract_input_fields(*args, **kwargs):
         for select in soup.find_all('select'):
             select_info = {
                 "html_code": str(select),
-                "css_selectors": {
-                    "class": select.get("class", []),
-                    "id": select.get("id", None),
-                },
                 "name": select.get("name", ""),
                 "options": [option.get_text(strip=True) for option in select.find_all('option')],
                 "selected_value": next((option.get_text(strip=True) for option in select.find_all('option') if option.has_attr('selected')), None),
@@ -276,6 +267,11 @@ playwright_tools = [
         description="Extracts all input fields from the current page, including their HTML code, CSS selectors, types, names, placeholders, values, and options. Useful for when you need to get more information about Inpuit Fields."
     ),
     Tool.from_function(
+        name="Extract HTML Content",
+        func=extract_html_content,
+        description="Extracts the full HTML content of the webpage and returns it in 2000-character segments based on the provided index. Useful for handling large HTML content in manageable parts. Args: index:int -> The index of the 2000-character segment to retrieve. increase index to get the next 2000-character segment"
+    ),
+    Tool.from_function(
         name="Click Element",
         func=click_element,
         description="Useful for clicking an element (HREF or buttons) on a webpage. Args: selector:str -> HTML tag or CSS selector of the element (href/button) to click"
@@ -296,3 +292,7 @@ playwright_tools = [
         description="Closes the browser and cleans up resources. Args: None"
     )
 ]
+
+if __name__ == "__main__":
+    open_page('https://github.com/nishchitbh')
+    print(extract_anchor_tags())
