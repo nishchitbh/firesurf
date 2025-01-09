@@ -1,31 +1,14 @@
 from playwright.sync_api import sync_playwright
 from langchain_core.tools import Tool
-from langchain_chroma import Chroma
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_experimental.text_splitter import SemanticChunker
 import ast
 from collections import defaultdict
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-
-embedding = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004", google_api_key=os.getenv("GOOGLE_GEMINI_API2"))
-
-text_splitter = SemanticChunker(embeddings=embedding)
-
-folder_path = "db"
-vector_store = Chroma(persist_directory=folder_path,
-                      embedding_function=embedding)
 
 
 # Initialize Playwright context
 def init_playwright():
     playwright = sync_playwright().start()
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     return playwright, browser, context
 
@@ -48,7 +31,6 @@ def open_page(url: str):
 
 
 def click_element(selector: str):
-    """Clicks on an element identified by a selector."""
     try:
         print(f"Clicking element: {selector}")
         page = context.pages[-1]  # Use the last opened page
@@ -68,6 +50,7 @@ def extract_text(selector: str):
     except Exception as e:
         return f"Error extracting text: {e}"
 
+
 def extract_html_tags(*args, **kwargs):
     try:
         # Get the most recently opened page in the context
@@ -75,7 +58,7 @@ def extract_html_tags(*args, **kwargs):
         full_html = page.content()
         soup = BeautifulSoup(full_html, "html.parser")
         print("Extracting HTML Tags and CSS Selectors...")
-    
+
         # Dictionary to collect tags and their CSS selectors
         tags_with_selectors = defaultdict(set)
 
@@ -83,14 +66,35 @@ def extract_html_tags(*args, **kwargs):
         for tag in soup.find_all(True):  # True finds all tags
             # Add class and id attributes if present
             if tag.get("class"):
-                tags_with_selectors[tag.name].update(tag.get("class"))  # Add all classes
+                tags_with_selectors[tag.name].update(
+                    tag.get("class"))  # Add all classes
             if tag.get("id"):
-                tags_with_selectors[tag.name].add(f"#{tag.get('id')}")  # Add id prefixed with #
+                tags_with_selectors[tag.name].add(
+                    f"#{tag.get('id')}")  # Add id prefixed with #
 
         return f"HTML tags and CSS selectors: {dict(tags_with_selectors)}"
 
     except Exception as e:
         return f"Error extracting HTML: {e}"
+
+def scrape_html_contents(tag_or_selector):
+    try:
+        page = context.pages[-1]
+        full_html = page.content()
+        soup = BeautifulSoup(full_html, 'html.parser')
+        
+        # Find all elements based on the provided tag or CSS selector
+        if tag_or_selector.startswith(('.', '#')):  # If it's a CSS class or ID selector
+            elements = soup.select(tag_or_selector)
+        else:  # If it's an HTML tag
+            elements = soup.find_all(tag_or_selector)
+        
+        # Extract the text content from each element
+        contents = [element for element in elements]
+        
+        return contents[:1001]
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 def type_into_field(inputs: str):
     """Types text into a field identified by a selector."""
@@ -109,6 +113,18 @@ def type_into_field(inputs: str):
         return to_print
     except Exception as e:
         return f"Error typing into field: {e}"
+
+
+def click_href(tag):
+    try:
+        print(f"Clicking on <a> tag with href: {tag}")
+        page = context.pages[-1]  # Use the last opened page
+
+        # Click the link
+        page.click(tag)
+        return f"Successfully clicked on <a> tag with tag {tag}"
+    except Exception as e:
+        return f"Error clicking on <a> tag: {e}"
 
 
 def close_browser(*args, **kwargs):
@@ -132,22 +148,27 @@ playwright_tools = [
     Tool.from_function(
         name="Click Element",
         func=click_element,
-        description="Useful for clicking an element on a webpage. Args: selector:str -> CSS selector of the element to click"
-    ),
-    Tool.from_function(
-        name="Extract Text",
-        func=extract_text,
-        description="Useful for extracting text from an element (HTML tag or CSS Selector). Args: selector:str -> CSS selector of the element to extract text from"
+        description="Useful for clicking an element (HREF or buttons) on a webpage. Args: selector:str -> HTML tag or CSS selector of the element (href/button) to click"
     ),
     Tool.from_function(
         name="Extract HTML Tags and CSS Selectors",
         func=extract_html_tags,
-        description="Useful for extracting all the HTML tags and CSS selectors present in a website"
+        description="Useful for extracting all the HTML tags and their corresponding CSS selectors present in a website"
     ),
     Tool.from_function(
         name="Type Into Field",
         func=type_into_field,
-        description="Useful for typing text into a field. Args: {'selector': 'CSS selector of the field', 'text': 'Text to type'}"
+        description="Useful for typing text into a field. Args: {'selector': 'CSS selector of the field obtained from Extract HTML Tags and CSS Selectors tool', 'text': 'Text to type'}"
+    ),
+    Tool.from_function(
+        name="Get HTML Code",
+        func=type_into_field,
+        description="Useful for getting HTML code [first 1000 characters] of a particular HTML tag or a CSS selector. Arg: tag_or_selector: str -> HTML tag or selector to get code of obtained from Extract HTML Tags and CSS Selectors."
+    ),
+    Tool.from_function(
+        name="Extract Text",
+        func=extract_text,
+        description="Useful for extracting text from an element (HTML tag or CSS Selector). Args: selector:str -> CSS selector of the element to extract text from obtained from Extract HTML Tags and CSS Selectors."
     ),
     Tool.from_function(
         name="Close Browser",
@@ -156,10 +177,14 @@ playwright_tools = [
     )
 ]
 
+
 def main():
-    open_page("http://fedan.com.np/")
-    print(extract_html_tags())
+    open_page("https://github.com/nishchitbh/")
+    # print(extract_html_tags())
+    print(extract_text("h3.wb-break-word"))
+    
     close_browser()
+
 
 if __name__ == "__main__":
     main()

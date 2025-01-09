@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm = GoogleGenerativeAI(
-    google_api_key=os.getenv("GOOGLE_GEMINI_API2"),
+    google_api_key=os.getenv("GOOGLE_GEMINI_API"),
     model="gemini-2.0-flash-exp"
 )
 
