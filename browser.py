@@ -20,7 +20,6 @@ playwright, browser, context = init_playwright()
 
 
 def open_page(url: str):
-    """Opens a webpage and returns the page object."""
     try:
         print(f"Opening page: {url}")
         page = context.new_page()
@@ -40,12 +39,14 @@ def click_element(selector: str):
         return f"Error clicking element: {e}"
 
 
-def extract_text(selector: str):
-    """Extracts text from an element identified by a selector."""
+def extract_text(inputs):
     try:
+        inputs = ast.literal_eval(inputs)
+        selector = inputs["selector"]
+        index = int(inputs['index'])
         print(f"Extracting text from element: {selector}")
         page = context.pages[-1]  # Use the last opened page
-        text = page.text_content(selector)
+        text = page.text_content(selector)[2000*index:2000*(index+1)]
         return f"Extracted text: {text}"
     except Exception as e:
         return f"Error extracting text: {e}"
@@ -77,24 +78,82 @@ def extract_html_tags(*args, **kwargs):
     except Exception as e:
         return f"Error extracting HTML: {e}"
 
-def scrape_html_contents(tag_or_selector):
+
+def extract_button_elements(*args, **kwargs):
     try:
+        # Get the most recently opened page in the context
         page = context.pages[-1]
         full_html = page.content()
-        soup = BeautifulSoup(full_html, 'html.parser')
-        
-        # Find all elements based on the provided tag or CSS selector
-        if tag_or_selector.startswith(('.', '#')):  # If it's a CSS class or ID selector
-            elements = soup.select(tag_or_selector)
-        else:  # If it's an HTML tag
-            elements = soup.find_all(tag_or_selector)
-        
-        # Extract the text content from each element
-        contents = [element for element in elements]
-        
-        return contents[:1001]
+        soup = BeautifulSoup(full_html, "html.parser")
+        print("Extracting button elements...")
+
+        # List to collect button details
+        buttons_info = []
+
+        # Find all <button> tags
+        for button in soup.find_all('button'):
+            button_info = {
+                "html_code": str(button),
+                "css_selectors": {
+                    "class": button.get("class", []),
+                    "id": button.get("id", None),
+                },
+                "text": button.get_text(strip=True),
+            }
+            buttons_info.append(button_info)
+
+        # Find all <input> tags with type "button" or "submit"
+        for input_tag in soup.find_all('input', {'type': ['button', 'submit']}):
+            input_info = {
+                "html_code": str(input_tag),
+                "css_selectors": {
+                    "class": input_tag.get("class", []),
+                    "id": input_tag.get("id", None),
+                },
+                "value": input_tag.get("value", ""),
+                "type": input_tag.get("type", ""),
+            }
+            buttons_info.append(input_info)
+
+        return buttons_info
+
     except Exception as e:
-        return f"An error occurred: {e}"
+        return f"Error extracting button elements: {e}"
+
+# Example usage:
+# Call `extract_button_elements()` after opening a page with `open_page(url)` to get details of all button elements.
+
+
+def extract_anchor_tags(*args, **kwargs):
+    try:
+        # Get the most recently opened page in the context
+        page = context.pages[-1]
+        full_html = page.content()
+        soup = BeautifulSoup(full_html, "html.parser")
+        print("Extracting anchor tags...")
+
+        # Dictionary to collect anchor tags with details
+        anchors_info = []
+
+        # Find all anchor tags in the HTML
+        for anchor in soup.find_all('a', href=True):
+            # Collecting necessary details for each anchor tag
+            anchor_info = {
+                "html_code": str(anchor),
+                "css_selectors": {
+                    "class": anchor.get("class", []),
+                    "id": anchor.get("id", None),
+                },
+                "link": anchor["href"],
+                "text": anchor.get_text(strip=True),
+            }
+            anchors_info.append(anchor_info)
+
+        return anchors_info
+
+    except Exception as e:
+        return f"Error extracting anchor tags: {e}"
+
 
 def type_into_field(inputs: str):
     """Types text into a field identified by a selector."""
@@ -115,16 +174,67 @@ def type_into_field(inputs: str):
         return f"Error typing into field: {e}"
 
 
-def click_href(tag):
+def extract_input_fields(*args, **kwargs):
     try:
-        print(f"Clicking on <a> tag with href: {tag}")
-        page = context.pages[-1]  # Use the last opened page
+        # Get the most recently opened page in the context
+        page = context.pages[-1]
+        full_html = page.content()
+        soup = BeautifulSoup(full_html, "html.parser")
+        print("Extracting input fields...")
 
-        # Click the link
-        page.click(tag)
-        return f"Successfully clicked on <a> tag with tag {tag}"
+        # List to collect input field details
+        inputs_info = []
+
+        # Find all <input> tags
+        for input_tag in soup.find_all('input'):
+            input_info = {
+                "html_code": str(input_tag),
+                "css_selectors": {
+                    "class": input_tag.get("class", []),
+                    "id": input_tag.get("id", None),
+                },
+                "type": input_tag.get("type", ""),
+                "name": input_tag.get("name", ""),
+                "placeholder": input_tag.get("placeholder", ""),
+                "value": input_tag.get("value", ""),
+            }
+            inputs_info.append(input_info)
+
+        # Find all <textarea> tags
+        for textarea in soup.find_all('textarea'):
+            textarea_info = {
+                "html_code": str(textarea),
+                "css_selectors": {
+                    "class": textarea.get("class", []),
+                    "id": textarea.get("id", None),
+                },
+                "name": textarea.get("name", ""),
+                "placeholder": textarea.get("placeholder", ""),
+                "value": textarea.get_text(strip=True),
+            }
+            inputs_info.append(textarea_info)
+
+        # Find all <select> tags
+        for select in soup.find_all('select'):
+            select_info = {
+                "html_code": str(select),
+                "css_selectors": {
+                    "class": select.get("class", []),
+                    "id": select.get("id", None),
+                },
+                "name": select.get("name", ""),
+                "options": [option.get_text(strip=True) for option in select.find_all('option')],
+                "selected_value": next((option.get_text(strip=True) for option in select.find_all('option') if option.has_attr('selected')), None),
+            }
+            inputs_info.append(select_info)
+
+        return inputs_info
+
     except Exception as e:
-        return f"Error clicking on <a> tag: {e}"
+        return f"Error extracting input fields: {e}"
+
+# Example usage:
+# Call `extract_input_fields()` after opening a page with `open_page(url)` to get details of all input fields.
 
 
 def close_browser(*args, **kwargs):
@@ -146,14 +256,29 @@ playwright_tools = [
         description="Useful for opening a webpage. Args: url:str -> URL of webpage to open"
     ),
     Tool.from_function(
-        name="Click Element",
-        func=click_element,
-        description="Useful for clicking an element (HREF or buttons) on a webpage. Args: selector:str -> HTML tag or CSS selector of the element (href/button) to click"
-    ),
-    Tool.from_function(
         name="Extract HTML Tags and CSS Selectors",
         func=extract_html_tags,
         description="Useful for extracting all the HTML tags and their corresponding CSS selectors present in a website"
+    ),
+    Tool.from_function(
+        name="Extract Anchor Tags",
+        func=extract_anchor_tags,
+        description="Extracts all anchor tags from the current page, including their HTML code, CSS selectors, links, and text content. Useful for when you need to get more information about anchor tags."
+    ),
+    Tool.from_function(
+        name="Extract Button Elements",
+        func=extract_anchor_tags,
+        description="Extracts all Button Elements (including submit button) from the current page, including their HTML code, CSS selectors, links, and text content. Useful for when you need to get more information about Button Elements."
+    ),
+    Tool.from_function(
+        name="Extract Input Fields",
+        func=extract_input_fields,
+        description="Extracts all input fields from the current page, including their HTML code, CSS selectors, types, names, placeholders, values, and options. Useful for when you need to get more information about Inpuit Fields."
+    ),
+    Tool.from_function(
+        name="Click Element",
+        func=click_element,
+        description="Useful for clicking an element (HREF or buttons) on a webpage. Args: selector:str -> HTML tag or CSS selector of the element (href/button) to click"
     ),
     Tool.from_function(
         name="Type Into Field",
@@ -161,14 +286,9 @@ playwright_tools = [
         description="Useful for typing text into a field. Args: {'selector': 'CSS selector of the field obtained from Extract HTML Tags and CSS Selectors tool', 'text': 'Text to type'}"
     ),
     Tool.from_function(
-        name="Get HTML Code",
-        func=type_into_field,
-        description="Useful for getting HTML code [first 1000 characters] of a particular HTML tag or a CSS selector. Arg: tag_or_selector: str -> HTML tag or selector to get code of obtained from Extract HTML Tags and CSS Selectors."
-    ),
-    Tool.from_function(
         name="Extract Text",
         func=extract_text,
-        description="Useful for extracting text from an element (HTML tag or CSS Selector). Args: selector:str -> CSS selector of the element to extract text from obtained from Extract HTML Tags and CSS Selectors."
+        description="Extracts up to 2000 characters of text from a specified element on the page using its CSS selector. Useful for handling large amounts of text by specifying an index to paginate through segments of the text. Args: {'selector': 'CSS selector of the element to extract text from', 'index': 'Index of the 2000-character segment to retrieve'} Example: passing 0 as index extracts first 2000 characters, passing 1 extracts 2001th to 4000th text and so on. Increase index to get more context."
     ),
     Tool.from_function(
         name="Close Browser",
