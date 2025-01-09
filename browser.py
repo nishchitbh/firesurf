@@ -176,15 +176,3 @@ playwright_tools = [
         description="Closes the browser and cleans up resources. Args: None"
     )
 ]
-
-
-def main():
-    open_page("https://github.com/nishchitbh/")
-    # print(extract_html_tags())
-    print(extract_text("h3.wb-break-word"))
-    
-    close_browser()
-
-
-if __name__ == "__main__":
-    main()
