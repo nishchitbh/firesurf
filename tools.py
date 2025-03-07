@@ -6,8 +6,7 @@ import os
 import platform
 import distro
 import nbformat
-from browser import playwright_tools
-
+import difflib
 
 os_type = platform.platform()
 
@@ -45,14 +44,55 @@ def write_code(inputs: dict):
     try:
         inputs = ast.literal_eval(inputs)
         filename = inputs["filename"]
-        print(f"Writing code into {filename}...")
-        code = inputs["code"]
-        with open(filename, "w") as f:
-            f.write(code)
-        return f"{code} written to {filename} successfully!"
+        new_code = inputs["code"]
+
+        # Check if file exists
+        file_exists = os.path.exists(filename)
+        original_content = ""
+
+        if file_exists:
+            # Read the original content
+            with open(filename, "r") as f:
+                original_content = f.read()
+
+            # Generate and display the diff in the terminal
+            diff = list(difflib.unified_diff(
+                original_content.splitlines(),
+                new_code.splitlines(),
+                fromfile=f"Original: {filename}",
+                tofile=f"New: {filename}"
+            ))
+
+            # Print the diff to the console with colors
+            for line in diff:
+                if line.startswith('+'):
+                    print(f"\033[92m{line}\033[0m")  # Green for additions
+                elif line.startswith('-'):
+                    print(f"\033[91m{line}\033[0m")  # Red for deletions
+                elif line.startswith('^'):
+                    print(f"\033[94m{line}\033[0m")  # Blue for indicators
+                else:
+                    print(line)
+        else:
+            # If file doesn't exist, show the code that will be created
+            print(f"File {filename} doesn't exist. New file will contain:")
+            print("=" * 50)
+            print(new_code)
+            print("=" * 50)
+
+        # Ask for confirmation
+        response = input(f"Accept changes to {filename}? (yes/no): ").lower()
+
+        if response in ["yes", "y"]:
+            # Write to the actual file
+            with open(filename, "w") as f:
+                f.write(new_code)
+            return f"Changes accepted and written to {filename}"
+        else:
+            return f"Changes to {filename} were rejected"
+
     except Exception as e:
         return str(e)
-
 # Useful for when you ened to read file. Arg: filename:str
 
 
@@ -167,4 +207,3 @@ tools = [
         description="Useful for when you need to read an ipynb notebook. Args: filename: str, directory to the file"
     ),
 ]
-tools.extend(playwright_tools)

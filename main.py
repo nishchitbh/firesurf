@@ -18,7 +18,7 @@ while True:
     # Get user input
     prompt = input(f"{Fore.GREEN}User: {Style.RESET_ALL}")
     # If the input contains "//" break the loop
-    if "//" in prompt:
+    if "/bye" in prompt:
         break
     try:
         # Invoke the agent executor with the chat history, input, and last conversation
