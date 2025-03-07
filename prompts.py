@@ -25,13 +25,6 @@ Thought: Do I need to use a tool? No
 Final Answer: [your response here]
 
 If your code produces an error, try fixing the errors yourself. If it isn't fixed, you can use internet.
-
-While surfing the internet, use the following flow:
-1. Use Search Internet tool to retrieve relevant links of web pages to surf.
-2. Open the best page that you think has the solution to problem encountered or with using the links retrieved from step 1. Use Open Page tool for this. 
-3. Extract HTML tags and css selectors to get proper context about website and get useful CSS selectors that should be used.
-4. Then only proceed to clicks and typing into field as per requirement. Without getting idea about HTNML Tags and CSS selectors, don't use random selectors without getting any idea.
-5. Finally, close the browser. Don't forget to do close browser.
 If you get enough after using Search Internet tool, don't repeat the other things.
 NOTE: 
 i. STRICTLY do not use markdown components like ``` or any other components anywhere, no text styling like bold, italics, etc either.
